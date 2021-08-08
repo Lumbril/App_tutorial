@@ -38,7 +38,23 @@ public class Controller {
     }
 
     @FXML
-    public void clickCheckButton() {
+    public void clickCheckButton() throws IOException, InterruptedException {
+        int step = Helper.currStep;
+        Lesson lesson = Helper.lessons[step];
+        String url = "src/main/resources/";
 
+        Runtime.getRuntime().exec("cmd.exe /c javac Test.java", null, new File(url));
+
+        File tests = new File(lesson.getUrl());
+        File[] testFiles = tests.listFiles();
+
+        Checker checker = new Checker(testFiles.length);
+
+        for (int i = 0; i < testFiles.length; i++) {
+            String cmd = lesson.getInputCMD() + testFiles[i].getName() + " " + lesson.getOutputCMD();
+            String urlAns = lesson.getUrlAns();
+
+            checker.check(cmd, urlAns, i);
+        }
     }
 }

@@ -31,7 +31,7 @@ public class Main extends Application {
             FileReader in = new FileReader(new File("src/main/resources/lessons/" + files[i].getName()));
 
             String text = in.readAll();
-            String cmd = generateCMD(files[i].getName().replaceAll("[.][^.]+$", ""));
+            String cmd = generateURL(files[i].getName().replaceAll("[.][^.]+$", ""));
 
             lessonArr[i] = new Lesson(cmd, text);
         }
@@ -39,16 +39,16 @@ public class Main extends Application {
         return lessonArr;
     }
 
-    private String generateCMD(String name) {
-        StringBuilder cmd = new StringBuilder("java Main < src/main/resources/tests/");
+    private String generateURL(String name) {
+        StringBuilder url = new StringBuilder("src/main/resources/tests/");
 
         for (int i = 5; i < name.length(); i++) {
-            cmd.append(name.charAt(i));
+            url.append(name.charAt(i));
         }
 
-        cmd.append("/tests/");
+        url.append("/tests/");
 
-        return cmd.toString();
+        return url.toString();
     }
 
     public static void main(String[] args) {

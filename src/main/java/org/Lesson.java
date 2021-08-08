@@ -1,13 +1,16 @@
 package org;
 
 public class Lesson {
+    private String url;
     private String inputCMD;
-    private String outputCMD = "src/main/resources/userFiles > ans.txt";
+    private String outputCMD = "> ans.txt";
     private String text;
 
-    public Lesson(String cmd, String text) {
-        this.inputCMD = cmd;
+    public Lesson(String url, String text) {
+        this.url = url;
         this.text = text;
+
+        this.inputCMD = "java Main < " + url.substring(18);
     }
 
     public String getInputCMD() {
@@ -28,5 +31,15 @@ public class Lesson {
 
     public String getOutputCMD() {
         return outputCMD;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUrlAns() {
+        String urlAns = url.substring(18, url.length() - 6);
+
+        return urlAns + "answers/";
     }
 }
