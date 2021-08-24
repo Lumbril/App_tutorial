@@ -5,19 +5,22 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
 
 public class Controller {
+    FileChooser fileChooser = new FileChooser();
+
     @FXML
     private VBox lessons;
 
     @FXML
-    private static Text text;
+    private Text rating;
 
     @FXML
     public void initialize() throws IOException {
@@ -29,7 +32,7 @@ public class Controller {
         for (int i = 0; i < files.length; i++) {
             Parent root = FXMLLoader.load(getClass().getResource("/lesson.fxml"));
             Text text = (Text) root.lookup("#lesson");
-            String number = Integer.toString(i + 1) + ". ";
+            String number = (i + 1) + ". ";
             text.setText(number + files[i].getName().replaceFirst("[.][^.]+$", ""));
             elements.add(root);
         }
@@ -38,23 +41,33 @@ public class Controller {
     }
 
     @FXML
-    public void clickCheckButton() throws IOException, InterruptedException {
+    public void clickCheckButton() throws InterruptedException {
         int step = Helper.currStep;
         Lesson lesson = Helper.lessons[step];
-        String url = "src/main/resources/";
 
-        Runtime.getRuntime().exec("cmd.exe /c javac Test.java", null, new File(url));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JAVA", "*.java"));
+        File file = fileChooser.showOpenDialog(new Stage());
 
-        File tests = new File(lesson.getUrl());
-        File[] testFiles = tests.listFiles();
+        if (file != null) {
+            String cmd = "cmd.exe /c javac " + file.getName();
+            String dir = file.getPath().replaceFirst("[\\\\][^\\\\]+$", "");
 
-        Checker checker = new Checker(testFiles.length);
+            CompileFile compileFile = new CompileFile(cmd, dir);
+            compileFile.start();
+            compileFile.join();
 
-        for (int i = 0; i < testFiles.length; i++) {
-            String cmd = lesson.getInputCMD() + testFiles[i].getName() + " " + lesson.getOutputCMD();
-            String urlAns = lesson.getUrlAns();
+            File tests = new File(lesson.getTestUrl());
+            File[] testFiles = tests.listFiles();
 
-            checker.check(cmd, urlAns, i);
+            Checker checker = new Checker(testFiles.length, dir, testFiles, lesson);
+
+            checker.start();
+            checker.join();
+
+            rating.setText(checker.getRating());
+
+            File javaClass = new File(file.getAbsolutePath().replaceFirst("[.][^.]+$", ".class"));
+            javaClass.delete();
         }
     }
 }

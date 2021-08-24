@@ -6,8 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class Main extends Application {
     @Override
@@ -20,6 +20,10 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     private Lesson[] initLessons() throws FileNotFoundException {
         File dir = new File("src/main/resources/lessons");
         File[] files = dir.listFiles();
@@ -27,7 +31,6 @@ public class Main extends Application {
         Lesson[] lessonArr = new Lesson[files.length];
 
         for (int i = 0; i < lessonArr.length; i++) {
-
             FileReader in = new FileReader(new File("src/main/resources/lessons/" + files[i].getName()));
 
             String text = in.readAll();
@@ -49,9 +52,5 @@ public class Main extends Application {
         url.append("/tests/");
 
         return url.toString();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
